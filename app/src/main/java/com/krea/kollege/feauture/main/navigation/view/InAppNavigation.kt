@@ -22,6 +22,7 @@ import com.krea.kollege.feauture.main.home.view.Home
 import com.krea.kollege.feauture.main.navigation.model.InAppScreen
 import com.krea.kollege.feauture.main.settings.view.Settings
 
+@OptIn(ExperimentalMaterialApi::class)
 @ExperimentalPagerApi
 @Composable
 fun InAppNavigation(

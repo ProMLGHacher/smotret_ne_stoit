@@ -1,13 +1,7 @@
 package com.krea.kollege.feauture.app_navigation.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,6 +10,7 @@ import com.krea.kollege.feauture.add_room.view.AddRoom
 import com.krea.kollege.feauture.app_navigation.model.Screen
 import com.krea.kollege.feauture.auth.view.Auth
 import com.krea.kollege.feauture.main.navigation.view.InAppNavigation
+import com.krea.kollege.feauture.map.view.Map
 import com.krea.kollege.feauture.splash.view.Splash
 
 @OptIn(ExperimentalPagerApi::class)
@@ -42,6 +37,11 @@ fun NavigationApp() {
         composable(Screen.AddRoom.route) {
             AddRoom(
                 navController
+            )
+        }
+        composable(Screen.Map.route) {
+            Map(
+                navController = navController
             )
         }
     }

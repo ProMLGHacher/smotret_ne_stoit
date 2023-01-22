@@ -20,12 +20,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.krea.kollege.feauture.app_navigation.model.Screen
+import com.krea.kollege.feauture.main.home.view_model.AddressViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,7 +51,9 @@ fun Home(
 ) {
     val pagerState = rememberPagerState()
     Column(modifier = Modifier.fillMaxSize()) {
-        AppBar()
+        AppBar(
+            navController = appNavController
+        )
         TabBar(
             appNavController,
             pagerState
@@ -155,19 +159,27 @@ fun TabBar(
 }
 
 @Composable
-fun AppBar() {
+fun AppBar(
+    navController: NavController,
+    viewModel: AddressViewModel = hiltViewModel()
+) {
+    val state by viewModel.state
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFF2A2A37))
             .padding(vertical = 20.dp, horizontal = 10.dp)
     ) {
-        Text("Your Home", color = Color.White, fontSize = 25.sp)
+        TextButton({
+                 navController.navigate(Screen.Map.route)
+        }, contentPadding = PaddingValues(0.dp)) {
+            Text("Your Home", color = Color.White, fontSize = 25.sp)
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(imageVector = Icons.Default.LocationOn, contentDescription = "", tint = Color.Gray)
-            Text("2715 Ash Dr. San Jose, South Dakota 83475", color = Color.Gray, fontSize = 12.sp)
+            Text(state.value.toString(), color = Color.Gray, fontSize = 12.sp)
         }
     }
 }
