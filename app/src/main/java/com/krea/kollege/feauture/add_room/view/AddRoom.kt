@@ -19,49 +19,53 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.krea.kollege.R
-
-data class RoomItem(
-    val icon: Int,
-    val name: String
-)
+import com.krea.kollege.domain.model.RoomType
+import com.krea.kollege.feauture.add_room.view_model.AddRoomViewModel
 
 val items = listOf(
-    RoomItem(icon = R.drawable.kitchen, name = "Kitchen"),
-    RoomItem(icon = R.drawable.bedroom, name = "Bedroom"),
-    RoomItem(icon = R.drawable.bathroom, name = "Bathroom"),
-    RoomItem(icon = R.drawable.office, name = "Office"),
-    RoomItem(icon = R.drawable.tv_room, name = "TV room"),
-    RoomItem(icon = R.drawable.living_room, name = "Living room"),
-    RoomItem(icon = R.drawable.garage, name = "Garage"),
-    RoomItem(icon = R.drawable.toilet, name = "Toilet"),
-    RoomItem(icon = R.drawable.kid_room, name = "Kid room"),
+    RoomType.TvRoom,
+    RoomType.KidRoom,
+    RoomType.Bedroom,
+    RoomType.LivingRoom,
+    RoomType.Kitchen,
+    RoomType.Bathroom,
+    RoomType.Garage,
+    RoomType.Office,
+    RoomType.Toilet
 )
 
 @ExperimentalFoundationApi
 @Composable
 fun AddRoom(
-    navController: NavController
+    navController: NavController,
+    viewModel: AddRoomViewModel = hiltViewModel()
 ) {
-    var selected by remember {
-        mutableStateOf(0)
-    }
-    AppBar(navController)
+    val state by viewModel.state
+
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        AppBar(navController)
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)) {
+        AppBar(navController, viewModel)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
             Text("Enter Room’s name", color = Color(0xFF979797))
             Spacer(modifier = Modifier.height(4.dp))
-            OutlinedTextField(value = "Kitchen", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = state.name, onValueChange = {
+                viewModel.setName(it)
+            }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(30.dp))
             Text("Select room’s icon", color = Color(0xFF979797))
         }
-        LazyVerticalGrid(columns = GridCells.Fixed(3), contentPadding = PaddingValues(horizontal = 10.dp)) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            contentPadding = PaddingValues(horizontal = 10.dp)
+        ) {
             items(items.size) { index ->
                 Column {
                     Box(modifier = Modifier
@@ -69,15 +73,27 @@ fun AddRoom(
                         .fillMaxSize(1f)
                         .clip(CircleShape)
                         .clickable {
-                            selected = index
+                            viewModel.setState(items[index])
                         }
-                        .background(if(index == selected) Color(0xFF984E4F) else Color(0xFFF0F0F0))
+                        .background(
+                            if (items[index] == state.type) Color(0xFF984E4F) else Color(
+                                0xFFF0F0F0
+                            )
+                        )
                         .padding(vertical = 15.dp, horizontal = 17.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(tint = if(index == selected) Color.White else Color(0xFFAFAFAF),painter = painterResource(id = items[index].icon), contentDescription = items[index].name)
+                        Icon(
+                            tint = if (items[index] == state.type) Color.White else Color(0xFFAFAFAF),
+                            painter = painterResource(id = items[index].icon),
+                            contentDescription = items[index].name,
+                        )
                     }
-                    Text(items[index].name, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Text(
+                        items[index].name,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }
@@ -87,7 +103,8 @@ fun AddRoom(
 
 @Composable
 fun AppBar(
-    navController: NavController
+    navController: NavController,
+    viewModel: AddRoomViewModel
 ) {
     Row(
         modifier = Modifier
@@ -101,10 +118,15 @@ fun AppBar(
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", tint = Color.White)
         }
         Text("Add room", color = Color.White, fontWeight = FontWeight.Bold)
-        TextButton(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-            contentColor = Color.White,
-            backgroundColor = Color.Transparent
-        )) {
+        TextButton(
+            onClick = {
+                      viewModel.save()
+                navController.popBackStack()
+            }, colors = ButtonDefaults.buttonColors(
+                contentColor = Color.White,
+                backgroundColor = Color.Transparent
+            )
+        ) {
             Text("SAVE", color = Color.White)
         }
     }

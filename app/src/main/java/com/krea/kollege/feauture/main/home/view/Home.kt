@@ -13,11 +13,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +31,7 @@ import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.krea.kollege.feauture.app_navigation.model.Screen
 import com.krea.kollege.feauture.main.home.view_model.AddressViewModel
+import com.krea.kollege.feauture.main.home.view_model.RoomsViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -37,10 +41,7 @@ data class TestData(
 
 val list = listOf(
     TestData(
-        "Комната"
-    ),
-    TestData(
-        "2 Комната"
+        "ROOM"
     )
 )
 
@@ -69,8 +70,14 @@ fun Home(
 @Composable
 fun Content(
     appNavController: NavController,
-    pagerState: PagerState
+    pagerState: PagerState,
+    viewModel: RoomsViewModel = hiltViewModel()
 ) {
+
+    LaunchedEffect(key1 = true) {
+        viewModel.getRooms()
+    }
+    val state by viewModel.state
     HorizontalPager(count = list.size, state = pagerState) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -78,7 +85,7 @@ fun Content(
                 .fillMaxSize()
                 .padding(5.dp),
         ) {
-            items(3) {
+            items(state.size) { index ->
                 Column(
                     modifier = Modifier
                         .padding(5.dp)
@@ -90,14 +97,14 @@ fun Content(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Person,
+                        painter = painterResource(id = state[index].type.icon),
                         contentDescription = "",
                         modifier = Modifier.size(50.dp),
                         tint = Color.White
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("Living Room", color = Color.White)
-                    Text("×3 Devices", color = Color.White.copy(0.85f))
+                    Text(state[index].name, color = Color.White)
+                    Text("×${state[index].listOfDevices.size} Devices", color = Color.White.copy(0.85f))
                 }
             }
         }
@@ -179,7 +186,10 @@ fun AppBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(imageVector = Icons.Default.LocationOn, contentDescription = "", tint = Color.Gray)
-            Text(state.value.toString(), color = Color.Gray, fontSize = 12.sp)
+            Text(state.value, color = Color.Gray, fontSize = 12.sp)
         }
+    }
+    LaunchedEffect(key1 = true) {
+        viewModel.update()
     }
 }
