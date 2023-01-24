@@ -1,6 +1,7 @@
 package com.krea.kollege.feauture.main.home.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -19,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -88,10 +90,15 @@ fun Content(
             items(state.size) { index ->
                 Column(
                     modifier = Modifier
+                        .shadow(if (state[index].name == viewModel.get()) 0.dp else 34.dp, shape = RoundedCornerShape(20.dp), ambientColor = Color.White)
                         .padding(5.dp)
                         .fillMaxSize()
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFF984E4F))
+                        .clickable {
+                            viewModel.set(state[index].name)
+                            appNavController.navigate(Screen.Room.route)
+                        }
+                        .background(if (state[index].name == viewModel.get()) Color(0xFF984E4F) else Color.White)
                         .padding(vertical = 28.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -100,11 +107,16 @@ fun Content(
                         painter = painterResource(id = state[index].type.icon),
                         contentDescription = "",
                         modifier = Modifier.size(50.dp),
-                        tint = Color.White
+                        tint = if (state[index].name == viewModel.get()) Color.White else Color(0xFF984E4F)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(state[index].name, color = Color.White)
-                    Text("×${state[index].listOfDevices.size} Devices", color = Color.White.copy(0.85f))
+                    Text(state[index].name, color = if (state[index].name == viewModel.get()) Color.White else Color(0xFF984E4F))
+                    Text(
+                        "×${state[index].listOfDevices.size} Devices",
+                        color = if (state[index].name == viewModel.get()) Color.White.copy(0.85f) else Color.Black.copy(
+                            0.2f
+                        )
+                    )
                 }
             }
         }
@@ -141,16 +153,16 @@ fun TabBar(
                     selected = true,
                     text = { Text(list[it].test) },
                     onClick = {
-                              scope.launch {
-                                  pagerState.animateScrollToPage(it)
-                              }
+                        scope.launch {
+                            pagerState.animateScrollToPage(it)
+                        }
                     },
                 )
             }
         }
         IconButton(
             onClick = {
-                      appNavController.navigate(Screen.AddRoom.route)
+                appNavController.navigate(Screen.AddRoom.route)
             }, modifier = Modifier
                 .padding(end = 10.dp)
                 .align(Alignment.CenterEnd)
@@ -178,7 +190,7 @@ fun AppBar(
             .padding(vertical = 20.dp, horizontal = 10.dp)
     ) {
         TextButton({
-                 navController.navigate(Screen.Map.route)
+            navController.navigate(Screen.Map.route)
         }, contentPadding = PaddingValues(0.dp)) {
             Text("Your Home", color = Color.White, fontSize = 25.sp)
         }

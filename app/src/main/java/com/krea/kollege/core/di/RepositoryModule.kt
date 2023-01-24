@@ -1,5 +1,6 @@
 package com.krea.kollege.core.di
 
+import android.content.SharedPreferences
 import com.krea.kollege.data.repository.RoomRepositoryImpl
 import com.krea.kollege.domain.repository.RoomRepository
 import dagger.Module
@@ -14,8 +15,10 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideRoomRepository(): RoomRepository {
-        return RoomRepositoryImpl()
+    fun provideRoomRepository(sharedPreferences: SharedPreferences): RoomRepository {
+        return RoomRepositoryImpl(
+            sharedPreferences
+        )
     }
 
 }

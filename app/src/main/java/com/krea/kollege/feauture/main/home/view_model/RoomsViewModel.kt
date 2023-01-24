@@ -23,4 +23,12 @@ class RoomsViewModel @Inject constructor(
         state.value = roomRepository.get()
     }
 
+    fun set(name: String) {
+        roomRepository.setCurrentRoom(name)
+    }
+
+    fun get(): String {
+        return roomRepository.getCurrentRoom()
+    }
+
 }
