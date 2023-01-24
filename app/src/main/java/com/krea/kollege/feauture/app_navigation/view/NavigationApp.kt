@@ -11,6 +11,7 @@ import com.krea.kollege.feauture.app_navigation.model.Screen
 import com.krea.kollege.feauture.auth.view.Auth
 import com.krea.kollege.feauture.main.navigation.view.InAppNavigation
 import com.krea.kollege.feauture.map.view.Map
+import com.krea.kollege.feauture.room.view.Room
 import com.krea.kollege.feauture.splash.view.Splash
 
 @OptIn(ExperimentalPagerApi::class)
@@ -41,6 +42,11 @@ fun NavigationApp() {
         }
         composable(Screen.Map.route) {
             Map(
+                navController = navController
+            )
+        }
+        composable(Screen.Room.route) {
+            Room(
                 navController = navController
             )
         }
