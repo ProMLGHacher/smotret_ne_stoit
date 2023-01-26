@@ -1,13 +1,17 @@
 package com.krea.kollege.feauture.room.view
 
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -17,10 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,34 +39,19 @@ import com.krea.kollege.R
 import com.krea.kollege.feauture.app_navigation.model.Screen
 import com.krea.kollege.feauture.room.model.RoomState
 import com.krea.kollege.feauture.room.view_model.RoomViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 @Composable
 fun Room(
     navController: NavController,
     viewModel: RoomViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.collectAsState()
+    val state = viewModel._state
     var selected by viewModel.selected
-    val o = rememberCoroutineScope()
-    LaunchedEffect(key1 = true) {
-        o.launch {
-            val st = viewModel._state.map {
-                Log.e("iuiuiu", it.toString())
-            }.stateIn(this)
-        }
-    }
     LaunchedEffect(key1 = true) {
         viewModel.update()
     }
-    LaunchedEffect(key1 = true) {
-        while (true) {
-            delay(100)
-            viewModel._state.value = state.value.copy()
-        }
+    LaunchedEffect(key1 = selected) {
+        Log.e("dd", "dd")
     }
     Column(modifier = Modifier.fillMaxSize()) {
         AppBar(navController, state.value.name)
@@ -93,7 +88,10 @@ fun Room(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        IconButton(onClick = { selected = it.name }) {
+                        IconButton(onClick = {
+                            selected = it.name
+                            viewModel.ok()
+                        }) {
                             Icon(
                                 painter = painterResource(id = if (it.name == "Light") R.drawable.light else R.drawable.thermostat),
                                 contentDescription = "",
@@ -112,8 +110,15 @@ fun Room(
             }
         }
         when (selected) {
-            "Light" -> Light(viewModel, state.value)
-            else -> Thermostat()
+            "Light" -> Light(viewModel, state.value) {
+                viewModel.switch()
+                navController.navigate(Screen.Ebatnya.route)
+            }
+            "Thermostat" -> Thermostat(viewModel, state.value) {
+                viewModel.switch()
+                navController.navigate(Screen.Ebatnya.route)
+            }
+            else -> {}
         }
     }
 }
@@ -121,7 +126,8 @@ fun Room(
 @Composable
 fun Light(
     viewModel: RoomViewModel,
-    state: RoomState
+    state: RoomState,
+    ok: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -156,14 +162,13 @@ fun Light(
                     )
                     .clip(shape = RoundedCornerShape(16.dp))
                     .clickable {
-                        viewModel.switch()
-                        viewModel.update()
+                        ok()
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.pover),
-                    tint = (if(state.devices.find { it.name == "Light" }?.isActive!!) Color.White else Color.Gray),
+                    tint = (if (state.devices.find { it.name == "Light" }?.isActive!!) Color.White else Color.Gray),
                     contentDescription = "",
                     modifier = Modifier.fillMaxSize(0.7f)
                 )
@@ -173,8 +178,38 @@ fun Light(
 }
 
 @Composable
-fun Thermostat() {
-
+fun Thermostat(
+    viewModel: RoomViewModel,
+    state: RoomState,
+    ok: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 10.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.height(100.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Thermostat", fontSize = 30.sp)
+                Text(state.name)
+            }
+            CustomSwitch(
+                isOn = state.devices.find { it.name == "Thermostat" }?.isActive!!,
+                switch = {
+                    ok()
+                },
+            )
+        }
+    }
 }
 
 @Composable
@@ -199,5 +234,62 @@ fun AppBar(
         }) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "", tint = Color.White)
         }
+
+    }
+}
+
+@Composable
+fun CustomSwitch(
+    scale: Float = 2f,
+    width: Dp = 36.dp,
+    height: Dp = 20.dp,
+    checkedTrackColor: Color = Color(0xFF984E4F),
+    uncheckedTrackColor: Color = Color(0xFFe0e0e0),
+    thumbColor: Color = Color.White,
+    gapBetweenThumbAndTrackEdge: Dp = 4.dp,
+    isOn: Boolean,
+    switch: () -> Unit
+) {
+
+    val thumbRadius = (height / 2) - gapBetweenThumbAndTrackEdge
+
+    // To move the thumb, we need to calculate the position (along x axis)
+    val animatePosition = animateFloatAsState(
+        targetValue = if (isOn)
+            with(LocalDensity.current) { (width - thumbRadius - gapBetweenThumbAndTrackEdge).toPx() }
+        else
+            with(LocalDensity.current) { (thumbRadius + gapBetweenThumbAndTrackEdge).toPx() }
+    )
+
+    Canvas(
+        modifier = Modifier
+            .padding(end = 10.dp)
+            .size(width = width, height = height)
+            .scale(scale = scale)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        switch()
+                    }
+                )
+            }
+    ) {
+
+        // Track
+        drawRoundRect(
+            color = if (isOn) checkedTrackColor else uncheckedTrackColor,
+            cornerRadius = CornerRadius(x = 10.dp.toPx(), y = 10.dp.toPx())
+        )
+
+        // Thumb
+        drawCircle(
+            color = thumbColor,
+            radius = thumbRadius.toPx(),
+            center = Offset(
+                x = animatePosition.value,
+                y = size.height / 2
+            )
+        )
+
     }
 }

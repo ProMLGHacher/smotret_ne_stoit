@@ -1,5 +1,6 @@
 package com.krea.kollege.feauture.add_device.view
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,7 @@ fun AddDevice(
     viewModel: AddDeviceViewModel = hiltViewModel()
 ) {
     val state by viewModel.state
+    val co = LocalContext.current
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         contentPadding = PaddingValues(horizontal = 10.dp)
@@ -54,10 +57,14 @@ fun AddDevice(
                     .fillMaxSize(1f)
                     .clip(CircleShape)
                     .clickable {
-                        viewModel.add(
-                            items[index].name
-                        )
-                        navController.popBackStack()
+                        if (viewModel.add(
+                                items[index].name
+                            )) {
+                            navController.popBackStack()
+                        } else {
+                            val s = "Название не должно быть пустым или совпадать с существующими"
+                            Toast.makeText(co, s, Toast.LENGTH_SHORT).show()
+                        }
                     }
                     .background(
                         if (items[index].name == state.value) Color(0xFF984E4F) else Color(

@@ -2,6 +2,7 @@ package com.krea.kollege.feauture.app_navigation.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -55,6 +56,11 @@ fun NavigationApp() {
             AddDevice(
                 navController = navController
             )
+        }
+        composable(Screen.Ebatnya.route) {
+            LaunchedEffect(key1 = true) {
+                navController.popBackStack()
+            }
         }
     }
 }

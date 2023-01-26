@@ -29,13 +29,22 @@ class AddRoomViewModel @Inject constructor(
         )
     }
 
-    fun save() {
+    fun save() : Boolean {
+        if (state.value.name == "") {
+            return false
+        }
+        roomRepository.get().forEach {
+            if(it.name == state.value.name) {
+                return false
+            }
+        }
         roomRepository.add(
             Room(
                 name = state.value.name,
                 type = state.value.type,
             )
         )
+        return true
     }
 
 }

@@ -1,5 +1,6 @@
 package com.krea.kollege.feauture.splash.view_model
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krea.kollege.feauture.splash.model.SplashState
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<SplashState>(SplashState.Loading)
@@ -26,8 +27,12 @@ class SplashViewModel @Inject constructor(
 
     fun delaySplash() {
         viewModelScope.launch {
-            delay(1000)
-            _state.value = SplashState.Unauthorized
+            delay(3500)
+            if (sharedPreferences.getBoolean("isLogin", false)) {
+                _state.value = SplashState.Success
+            } else {
+                _state.value = SplashState.Unauthorized
+            }
         }
     }
 

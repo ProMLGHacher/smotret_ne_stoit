@@ -38,11 +38,7 @@ fun Auth(
     }
     LaunchedEffect(key1 = state.value) {
         when(state.value) {
-            is AuthState.Auth -> {
-                navController.navigate(Screen.Main.route) {
-                    launchSingleTop = true
-                }
-            }
+            is AuthState.Auth -> {}
             AuthState.Success -> {
                 navController.navigate(Screen.Main.route) {
                     launchSingleTop = true

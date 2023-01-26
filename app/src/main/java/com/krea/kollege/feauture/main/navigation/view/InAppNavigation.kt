@@ -86,7 +86,7 @@ fun InAppNavigation(
 
             }
             composable(InAppScreen.Settings.route) {
-                Settings()
+                Settings(navController = appNavController)
             }
         }
     }

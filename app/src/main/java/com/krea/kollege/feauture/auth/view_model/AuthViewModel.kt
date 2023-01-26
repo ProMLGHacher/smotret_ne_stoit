@@ -1,5 +1,6 @@
 package com.krea.kollege.feauture.auth.view_model
 
+import android.content.SharedPreferences
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import com.krea.kollege.feauture.auth.model.AuthState
@@ -11,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<AuthState>(AuthState.Auth())
@@ -40,6 +41,11 @@ class AuthViewModel @Inject constructor(
                 _state.update {
                     AuthState.Success
                 }
+                sharedPreferences.edit().putString("Username", "Олег").apply()
+                sharedPreferences.edit().putString("Email", "aaa@mail.ru").apply()
+                sharedPreferences.edit().putString("Phone", "89878884054").apply()
+                sharedPreferences.edit().putString("Gender", "Олег").apply()
+                sharedPreferences.edit().putBoolean("isLogin", true).apply()
                 return
             } else {
                 _state.update {
@@ -61,6 +67,11 @@ class AuthViewModel @Inject constructor(
             _state.update {
                 AuthState.Success
             }
+            sharedPreferences.edit().putString("Username", state.name).apply()
+            sharedPreferences.edit().putString("Email", state.mail).apply()
+            sharedPreferences.edit().putString("Phone", "").apply()
+            sharedPreferences.edit().putString("Gender", "").apply()
+            sharedPreferences.edit().putBoolean("isLogin", true).apply()
             return
         }
     }

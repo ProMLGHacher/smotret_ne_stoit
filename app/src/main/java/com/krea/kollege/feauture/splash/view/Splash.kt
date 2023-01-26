@@ -57,6 +57,11 @@ fun Splash(
                     inclusive = true
                 }
             }
+            SplashState.Success -> navController.navigate(Screen.Main.route) {
+                popUpTo(Screen.Main.route) {
+                    inclusive = true
+                }
+            }
         }
     }
 }

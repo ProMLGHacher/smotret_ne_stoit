@@ -1,5 +1,6 @@
 package com.krea.kollege.feauture.main.settings.view
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,16 +18,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.krea.kollege.R
+import com.krea.kollege.feauture.app_navigation.model.Screen
+import com.krea.kollege.feauture.main.settings.view_model.SettingsViewModel
 
 @ExperimentalMaterialApi
 @Composable
-fun Settings() {
+fun Settings(
+    navController: NavController,
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
     Column(modifier = Modifier.fillMaxSize()) {
-        AppBar()
+        AppBar(viewModel)
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -66,20 +75,15 @@ fun Settings() {
                     }
                 }
             }
-            val list = listOf(
-                "Username",
-                "Email",
-                "Phone",
-                "Gender",
-                "Date Of Birth",
-            )
-            items(list.size) { index ->
+            item {
                 Column(modifier = Modifier.padding(horizontal = 10.dp)) {
                     Spacer(modifier = Modifier.height(35.dp))
-                    Text(list[index], modifier = Modifier.fillMaxWidth())
+                    Text("Username", modifier = Modifier.fillMaxWidth())
                     TextField(
-                        value = list[index],
-                        onValueChange = {},
+                        value = viewModel.name.value,
+                        onValueChange = {
+                                        viewModel.setName(it)
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.textFieldColors(
                             Color.Black,
@@ -89,9 +93,70 @@ fun Settings() {
                 }
             }
             item {
-                TextButton(onClick = { /*TODO*/ }, modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(10.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 10.dp)) {
+                    Spacer(modifier = Modifier.height(35.dp))
+                    Text("Email", modifier = Modifier.fillMaxWidth())
+                    TextField(
+                        value = viewModel.email.value,
+                        onValueChange = {
+                            viewModel.setEmail(it)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.textFieldColors(
+                            Color.Black,
+                            backgroundColor = Color.Transparent
+                        ),
+                    )
+                }
+            }
+            item {
+                Column(modifier = Modifier.padding(horizontal = 10.dp)) {
+                    Spacer(modifier = Modifier.height(35.dp))
+                    Text("Phone", modifier = Modifier.fillMaxWidth())
+                    TextField(
+                        value = viewModel.phone.value,
+                        onValueChange = {
+                            viewModel.setPhone(it)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.textFieldColors(
+                            Color.Black,
+                            backgroundColor = Color.Transparent
+                        ),
+                    )
+                }
+            }
+            item {
+                Column(modifier = Modifier.padding(horizontal = 10.dp)) {
+                    Spacer(modifier = Modifier.height(35.dp))
+                    Text("Gender", modifier = Modifier.fillMaxWidth())
+                    TextField(
+                        value = viewModel.gender.value,
+                        onValueChange = {
+                            viewModel.setGender(it)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.textFieldColors(
+                            Color.Black,
+                            backgroundColor = Color.Transparent
+                        ),
+                    )
+                }
+            }
+
+            item {
+                TextButton(
+                    onClick = {
+                              viewModel.out()
+                        navController.navigate(Screen.Splash.route) {
+                            popUpTo(Screen.Splash.route) {
+                                inclusive = true
+                            }
+                        }
+                    }, modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(10.dp)
+                ) {
                     Text("Sign Out", color = Color.Red)
                 }
             }
@@ -101,14 +166,18 @@ fun Settings() {
 }
 
 
-
 @Composable
-fun AppBar() {
+fun AppBar(
+    viewModel: SettingsViewModel
+) {
+    val s = LocalContext.current
     Column {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(Color(0xFF707070)))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color(0xFF707070))
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,7 +187,9 @@ fun AppBar() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextButton(
-                onClick = { }, colors = ButtonDefaults.buttonColors(
+                onClick = {
+                    Toast.makeText(s, "Я тебя люблю❤️", Toast.LENGTH_LONG).show()
+                }, colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
                     backgroundColor = Color.Transparent
                 )
@@ -127,7 +198,7 @@ fun AppBar() {
             }
             Text("Profile", color = Color.White, fontWeight = FontWeight.Bold)
             TextButton(
-                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                onClick = { viewModel.submit() }, colors = ButtonDefaults.buttonColors(
                     contentColor = Color.White,
                     backgroundColor = Color.Transparent
                 )
@@ -135,9 +206,11 @@ fun AppBar() {
                 Text("SAVE", color = Color.White)
             }
         }
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(Color(0xFF707070)))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color(0xFF707070))
+        )
     }
 }

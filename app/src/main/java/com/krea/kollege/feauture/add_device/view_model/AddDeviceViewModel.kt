@@ -15,8 +15,21 @@ class AddDeviceViewModel @Inject constructor(
     private val _state = mutableStateOf("")
     val state = ::_state
 
-    fun add(name: String) {
+    fun add(name: String): Boolean {
+        if (name == "") {
+            return false
+        }
+        repository.get().forEach {
+            if (it.name == repository.getCurrentRoom()) {
+                it.listOfDevices.forEach { d ->
+                    if (d.name == name) {
+                        return false
+                    }
+                }
+            }
+        }
         repository.addDevice(name)
+        return true
     }
 
 }
