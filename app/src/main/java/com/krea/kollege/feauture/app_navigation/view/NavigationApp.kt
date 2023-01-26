@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.krea.kollege.feauture.add_device.view.AddDevice
 import com.krea.kollege.feauture.add_room.view.AddRoom
 import com.krea.kollege.feauture.app_navigation.model.Screen
 import com.krea.kollege.feauture.auth.view.Auth
@@ -47,6 +48,11 @@ fun NavigationApp() {
         }
         composable(Screen.Room.route) {
             Room(
+                navController = navController
+            )
+        }
+        composable(Screen.AddDevice.route) {
+            AddDevice(
                 navController = navController
             )
         }

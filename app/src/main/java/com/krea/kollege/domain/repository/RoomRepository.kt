@@ -7,4 +7,6 @@ interface RoomRepository {
     fun add(room: Room)
     fun getCurrentRoom() : String
     fun setCurrentRoom(name: String)
+    fun addDevice(name: String)
+    fun switchDeviceActivity(name: String)
 }

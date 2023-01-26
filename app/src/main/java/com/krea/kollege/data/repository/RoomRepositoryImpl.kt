@@ -1,6 +1,8 @@
 package com.krea.kollege.data.repository
 
 import android.content.SharedPreferences
+import android.util.Log
+import com.krea.kollege.domain.model.Device
 import com.krea.kollege.domain.model.Room
 import com.krea.kollege.domain.repository.RoomRepository
 
@@ -24,6 +26,33 @@ class RoomRepositoryImpl(
 
     override fun setCurrentRoom(name: String) {
         sharedPreferences.edit().putString("CURRENT_ROOM", name).apply()
+    }
+
+    override fun switchDeviceActivity(name: String) {
+        list.all {
+            if (it.name == getCurrentRoom()) {
+                it.listOfDevices.filter { ok -> ok.name == name }.apply {
+                    first().isActive = !first().isActive
+                }
+                return@all true
+            }
+            else {
+                return@all true
+            }
+        }
+    }
+
+    override fun addDevice(name: String) {
+        list.all {
+            if (it.name == getCurrentRoom()) {
+                it.listOfDevices.add(Device(name = name, false))
+                return@all true
+            }
+            else {
+                return@all true
+            }
+        }
+        Log.e("LLL", list.toString())
     }
 
 

@@ -18,11 +18,12 @@ sealed class RoomType(
 }
 
 data class Device(
-    val name: String
+    val name: String,
+    var isActive: Boolean
 )
 
 data class Room(
     val name: String,
     val type: RoomType,
-    val listOfDevices: List<Device> = emptyList()
+    val listOfDevices: MutableList<Device> = mutableListOf()
 )
