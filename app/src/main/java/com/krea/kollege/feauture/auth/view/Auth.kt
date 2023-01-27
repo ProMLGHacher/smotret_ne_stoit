@@ -81,7 +81,7 @@ fun Content(
         Column(
             modifier = Modifier
                 .background(
-                    if (state.isLogin) Color.Transparent else Color(0x88C2B874),
+                    if (state.isLogin) Color(0x88C2B874) else Color(0x88C2B874),
                     shape = RoundedCornerShape(20.dp)
                 )
                 .padding(top = 20.dp, bottom = 40.dp, start = 20.dp, end = 20.dp),

@@ -19,7 +19,7 @@ fun Map(
 ) {
     val singapore = LatLng(1.35, 103.87)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
+        position = CameraPosition.fromLatLngZoom(viewModel.b.value, 13f)
     }
 
     GoogleMap(
