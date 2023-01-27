@@ -55,7 +55,6 @@ fun Room(
     }
     Column(modifier = Modifier.fillMaxSize()) {
         AppBar(navController, state.value.name)
-        Text(state.value.devices.toString())
         Box(
             modifier = Modifier
                 .shadow(34.dp, ambientColor = Color.White)
